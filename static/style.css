@@ -88,7 +88,9 @@ kbd {
   background: color-mix(in srgb, var(--bg) 80%, transparent);
   backdrop-filter: blur(10px); position: relative; z-index: 30;
 }
-.brand { display: flex; flex-direction: column; line-height: 1.05; flex: none; }
+.brand { display: flex; flex-direction: row; align-items: center; gap: 11px; flex: none; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+.brand-mark { height: 32px; width: auto; display: block; border-radius: 6px; }
 .logo {
   font-weight: 800; font-size: 23px; letter-spacing: -.5px;
   background: linear-gradient(95deg, var(--k-investigation), var(--k-customization) 45%, var(--k-product));

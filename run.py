@@ -29,10 +29,84 @@ HOST = "127.0.0.1"
 PREFERRED_PORT = 8766                       # Amethyst owns 8765 — we never touch it
 PORT_RANGE = list(range(8766, 8780))        # fallback pool, excludes 8765
 ROOT = Path(__file__).resolve().parent
-REQUIRED = ["fastapi", "uvicorn", "yaml", "markdown", "pymdownx", "pygments"]
+REQUIRED = ["fastapi", "uvicorn", "yaml", "markdown", "pymdownx", "pygments", "webview"]
+APPDIR = os.path.join(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"), "Opal")
 
 sys.path.insert(0, str(ROOT))               # so we can import app.win (stdlib-only)
 from app.win import open_app_window          # noqa: E402
+
+
+# ── native window (own taskbar icon) ────────────────────────────────────────
+def _stable_icon():
+    """Copy the Opal .ico to a stable path (a one-file build's bundled dir is a temp
+    folder that vanishes on exit) so the taskbar icon survives the window closing."""
+    src = ROOT / "static" / "favicon.ico"
+    dst = os.path.join(APPDIR, "opal.ico")
+    if src.is_file():
+        os.makedirs(APPDIR, exist_ok=True)
+        try:
+            import shutil
+            shutil.copyfile(src, dst)
+        except Exception:
+            pass
+    return dst if os.path.isfile(dst) else None
+
+
+def _ensure_shortcut(icon):
+    """A gem… er, Opal-iconed launcher shortcut (Start Menu + Desktop) for pinning,
+    carrying our AUMID so a pinned entry keeps the Opal icon."""
+    try:
+        from app import winshortcut
+        if not icon:
+            return
+        if getattr(sys, "frozen", False):
+            target, args = sys.executable, ""
+        else:
+            cmd = str(ROOT / "Start.cmd")
+            target, args = (cmd, "") if os.path.isfile(cmd) else (sys.executable, f'"{ROOT / "run.py"}"')
+        winshortcut.ensure(target, args, icon)
+    except Exception:
+        pass
+
+
+def _run_window(url):
+    """A single Opal window as its OWN process (so closing it never stops the server,
+    and `--new`/`--project` still open extra windows). pywebview WebView2 window stamped
+    with our AUMID + icon so the taskbar button shows the Opal logo, not Edge/python."""
+    icon = _stable_icon()
+    winshortcut = None
+    try:
+        from app import winshortcut as _ws
+        winshortcut = _ws
+        winshortcut.set_process_aumid()
+    except Exception:
+        pass
+    try:
+        import webview
+    except Exception:
+        from app.win import edge_app
+        edge_app(url)                       # no WebView2 -> Edge --app window
+        return
+
+    win = webview.create_window("Opal", url, width=1600, height=1000, hidden=True)
+
+    def identity_then_show():
+        try:
+            if winshortcut:
+                for _ in range(60):         # stamp AUMID while hidden, then show
+                    if winshortcut.set_window_aumid():
+                        break
+                    time.sleep(0.05)
+        finally:
+            try:
+                win.show()
+            except Exception:
+                pass
+
+    try:
+        webview.start(identity_then_show, icon=icon)
+    except TypeError:                       # older pywebview without start(icon=...)
+        webview.start(identity_then_show)
 
 
 # ── deps ──────────────────────────────────────────────────────────────────
@@ -139,9 +213,17 @@ def main():
     ap.add_argument("--doc", default="", help="deep-link to a specific doc path")
     ap.add_argument("--new", action="store_true", help="just open another window on a running Opal")
     ap.add_argument("--restart", action="store_true", help="force a clean restart")
+    ap.add_argument("--window-only", default="", help=argparse.SUPPRESS)   # internal: just a window at this URL
     args = ap.parse_args()
 
+    # Internal: this process is JUST an Opal window (spawned by app.win.open_app_window).
+    # The server lives in its own process, so closing a window never stops Opal.
+    if args.window_only:
+        _run_window(args.window_only)
+        return
+
     ensure_deps()
+    _ensure_shortcut(_stable_icon())          # Opal-iconed Start-Menu/Desktop shortcut for pinning
 
     # Reuse a healthy instance for extra windows (the multi-window path) —
     # no second server, no port conflict.

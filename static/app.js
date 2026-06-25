@@ -456,6 +456,8 @@ function setTheme(t) {
   localStorage.opalTheme = t;
   const el = $("#theme-name"); if (el) el.textContent = THEME_NAME[t];
   const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = THEME_BG[t] || "#14121a";
+  // night = near-black -> extra-dark tile; day (cream) & paper (sepia) are light -> light tile
+  const logo = $("#brand-logo"); if (logo) logo.src = `/static/opal-${t === "night" ? "extra-dark" : "light"}.png?v=8`;
 }
 
 function setTitle(s) { document.title = s ? `${s} — Opal` : "Opal — T24 project reader"; }
