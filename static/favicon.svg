@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f0a020"/>
+      <stop offset=".45" stop-color="#a855f7"/>
+      <stop offset="1" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#14121a"/>
+  <!-- brilliant-cut gem -->
+  <path d="M8 7 H24 L28.5 14 L16 27 L3.5 14 Z" fill="url(#g)"/>
+  <!-- facet lines -->
+  <g stroke="#ffffff" stroke-opacity=".55" stroke-width="1" fill="none" stroke-linejoin="round">
+    <path d="M8 7 L11.5 14 L16 27 M24 7 L20.5 14 L16 27 M3.5 14 H28.5 M11.5 14 L16 7 L20.5 14"/>
+  </g>
+</svg>

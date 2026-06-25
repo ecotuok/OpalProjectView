@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="day">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Opal — T24 project reader</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=7">
+  <meta name="theme-color" content="#14121a">
+  <link rel="stylesheet" href="/static/style.css?v=7">
+</head>
+<body>
+  <div id="progress"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">Opal</span>
+      <span class="brand-sub">T24 project reader</span>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Search projects &amp; docs…  ( / )" autocomplete="off">
+    </div>
+    <div class="controls">
+      <div class="fontctl" title="Reading size">
+        <button id="font-dec" aria-label="Smaller text">A&minus;</button>
+        <button id="font-inc" aria-label="Larger text">A+</button>
+      </div>
+      <button id="new-window" class="ctl" title="Open current view in a new window (n)">⧉ Window</button>
+      <button id="focus-toggle" class="ctl" title="Immersive reading (f)">Focus</button>
+      <button id="theme-toggle" class="ctl" title="Theme — Day / Night / Paper (t)">◐ <span id="theme-name">Day</span></button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside id="sidebar" class="sidebar">
+      <div id="workspace-list" class="ws"></div>
+      <div class="lib-filters" id="kind-filters"></div>
+      <div id="project-list" class="projects"></div>
+      <div class="sidebar-foot" id="root-path"></div>
+    </aside>
+
+    <section id="reader" class="reader">
+      <div id="welcome" class="welcome">
+        <div class="welcome-inner">
+          <span class="logo logo-big">Opal</span>
+          <p class="welcome-lead">A calm reader for the T24 project context layer.</p>
+          <p class="muted">Pick a project on the left, or open the <a href="#" id="open-playbook">Playbook</a>.
+          Press <kbd>/</kbd> to search, <kbd>f</kbd> for immersive reading, <kbd>t</kbd> to change theme.</p>
+        </div>
+      </div>
+
+      <div id="doc-wrap" hidden>
+        <div id="doc-head" class="doc-head"></div>
+        <article id="doc" class="prose"></article>
+        <div id="doc-foot" class="doc-foot"></div>
+      </div>
+    </section>
+
+    <aside id="rail" class="rail">
+      <div id="manifest-card" class="manifest"></div>
+      <nav id="toc" class="toc"></nav>
+    </aside>
+  </main>
+
+  <script src="/static/app.js?v=7"></script>
+</body>
+</html>

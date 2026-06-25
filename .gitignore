@@ -1,0 +1,13 @@
+# Opal local config (user's chosen projects folder) — machine-specific
+.opal.json
+
+# Python
+__pycache__/
+*.py[cod]
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vs/
+.idea/
+*.swp
